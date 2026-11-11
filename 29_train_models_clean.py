@@ -23,6 +23,7 @@ from sklearn.metrics import (
 )
 
 from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 
 
 warnings.filterwarnings("ignore")
@@ -288,6 +289,41 @@ models["XGBoost"] = Pipeline(
                 objective="binary:logistic",
                 eval_metric="logloss",
                 random_state=42,
+                n_jobs=-1
+            )
+        )
+    ]
+)
+
+
+# ------------------------------------------------------------
+# LightGBM
+# ------------------------------------------------------------
+
+models["LightGBM"] = Pipeline(
+    steps=[
+
+        (
+            "imputer",
+            SimpleImputer(
+                strategy="median"
+            )
+        ),
+
+        (
+            "model",
+            LGBMClassifier(
+                n_estimators=300,
+                max_depth=3,
+                num_leaves=7,
+                learning_rate=0.03,
+                subsample=0.8,
+                subsample_freq=1,
+                colsample_bytree=0.8,
+                objective="binary",
+                class_weight="balanced",
+                random_state=42,
+                verbose=-1,
                 n_jobs=-1
             )
         )

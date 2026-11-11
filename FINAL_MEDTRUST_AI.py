@@ -61,6 +61,14 @@ except ImportError:
     raise
 
 try:
+    from lightgbm import LGBMClassifier
+except ImportError:
+    print("\nERROR: lightgbm is not installed.")
+    print("Run:")
+    print("pip install lightgbm")
+    raise
+
+try:
     import shap
 except ImportError:
     print("\nERROR: shap is not installed.")
@@ -97,6 +105,9 @@ OUTPUT_DIR = os.path.join(
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 RANDOM_STATE = 42
+
+# Set to True to display interactive matplotlib windows on your screen
+SHOW_GRAPHS_INTERACTIVELY = False
 
 
 # ================================================================
@@ -314,10 +325,10 @@ print("Test:", len(X_test))
 
 
 # ================================================================
-# 4. TRAIN THREE MODELS
+# 4. TRAIN FOUR MODELS (LR, RF, XGBOOST, LIGHTGBM)
 # ================================================================
 
-print("\n[4/10] Training LR, Random Forest and XGBoost...")
+print("\n[4/10] Training LR, Random Forest, XGBoost and LightGBM...")
 
 lr_model = make_pipeline(
     LogisticRegression(
@@ -355,10 +366,30 @@ xgb_model = make_pipeline(
     xgb_base
 )
 
+lgbm_base = LGBMClassifier(
+    n_estimators=300,
+    max_depth=3,
+    num_leaves=7,
+    learning_rate=0.03,
+    subsample=0.8,
+    subsample_freq=1,
+    colsample_bytree=0.8,
+    objective="binary",
+    class_weight="balanced",
+    random_state=RANDOM_STATE,
+    verbose=-1,
+    n_jobs=-1
+)
+
+lgbm_model = make_pipeline(
+    lgbm_base
+)
+
 models = {
     "Logistic Regression": lr_model,
     "Random Forest": rf_model,
-    "XGBoost": xgb_model
+    "XGBoost": xgb_model,
+    "LightGBM": lgbm_model
 }
 
 model_results = []
@@ -408,10 +439,10 @@ print(
 
 
 # ================================================================
-# 5. CALIBRATED XGBOOST
+# 5. CALIBRATED MODELS (XGBOOST + LIGHTGBM)
 # ================================================================
 
-print("\n[5/10] Calibrating XGBoost...")
+print("\n[5/10] Calibrating XGBoost and LightGBM...")
 
 calibrated_xgb = CalibratedClassifierCV(
     estimator=make_pipeline(
@@ -444,14 +475,63 @@ calibrated_test_prob = calibrated_xgb.predict_proba(
     X_test
 )[:, 1]
 
-calibrated_metrics = calculate_metrics(
+calibrated_xgb_metrics = calculate_metrics(
     "Calibrated XGBoost",
     y_test,
     calibrated_test_prob
 )
 
+calibrated_lgbm = CalibratedClassifierCV(
+    estimator=make_pipeline(
+        LGBMClassifier(
+            n_estimators=300,
+            max_depth=3,
+            num_leaves=7,
+            learning_rate=0.03,
+            subsample=0.8,
+            subsample_freq=1,
+            colsample_bytree=0.8,
+            objective="binary",
+            random_state=RANDOM_STATE,
+            verbose=-1,
+            n_jobs=-1
+        )
+    ),
+    method="sigmoid",
+    cv=3
+)
+
+calibrated_lgbm.fit(
+    X_train,
+    y_train
+)
+
+calibrated_lgbm_val_prob = calibrated_lgbm.predict_proba(
+    X_validation
+)[:, 1]
+
+calibrated_lgbm_test_prob = calibrated_lgbm.predict_proba(
+    X_test
+)[:, 1]
+
+calibrated_lgbm_metrics = calculate_metrics(
+    "Calibrated LightGBM",
+    y_test,
+    calibrated_lgbm_test_prob
+)
+
 print("\nCalibrated XGBoost:")
-for key, value in calibrated_metrics.items():
+for key, value in calibrated_xgb_metrics.items():
+    if key != "Model":
+        print(
+            f"{key}: "
+            f"{value:.4f}"
+            if pd.notna(value)
+            else f"{key}: N/A"
+        )
+
+print("\nCalibrated LightGBM:")
+for key, value in calibrated_lgbm_metrics.items():
     if key != "Model":
         print(
             f"{key}: "
@@ -942,6 +1022,18 @@ patient_results["calibrated_probability"] = (
     calibrated_test_prob
 )
 
+patient_results["calibrated_probability_xgb"] = (
+    calibrated_test_prob
+)
+
+patient_results["calibrated_probability_lgbm"] = (
+    calibrated_lgbm_test_prob
+)
+
+patient_results["model_disagreement"] = np.abs(
+    calibrated_test_prob - calibrated_lgbm_test_prob
+)
+
 patient_results["predictive_confidence"] = (
     test_confidence
 )
@@ -1089,7 +1181,10 @@ all_model_metrics = pd.concat(
     [
         model_metrics,
         pd.DataFrame(
-            [calibrated_metrics]
+            [
+                calibrated_xgb_metrics,
+                calibrated_lgbm_metrics
+            ]
         )
     ],
     ignore_index=True
@@ -1127,6 +1222,14 @@ shap_importance.to_csv(
     index=False
 )
 
+print("  [+] Saved CSV files:")
+print("      - model_performance.csv")
+print("      - routing_results.csv")
+print("      - patient_results.csv")
+print("      - shap_feature_importance.csv")
+
+print("\n  [+] Generating and saving figures to disk:")
+
 
 # ------------------------------------------------
 # GRAPH 1: MODEL PERFORMANCE
@@ -1156,13 +1259,20 @@ plt.xticks(
 
 plt.tight_layout()
 
+graph1_path = os.path.join(
+    OUTPUT_DIR,
+    "model_performance.png"
+)
+
 plt.savefig(
-    os.path.join(
-        OUTPUT_DIR,
-        "model_performance.png"
-    ),
+    graph1_path,
     dpi=300
 )
+
+print(f"      1/5 -> Saved: {graph1_path}")
+
+if SHOW_GRAPHS_INTERACTIVELY:
+    plt.show()
 
 plt.close()
 
@@ -1202,13 +1312,20 @@ plt.title(
 
 plt.tight_layout()
 
+graph2_path = os.path.join(
+    OUTPUT_DIR,
+    "shap_importance.png"
+)
+
 plt.savefig(
-    os.path.join(
-        OUTPUT_DIR,
-        "shap_importance.png"
-    ),
+    graph2_path,
     dpi=300
 )
+
+print(f"      2/5 -> Saved: {graph2_path}")
+
+if SHOW_GRAPHS_INTERACTIVELY:
+    plt.show()
 
 plt.close()
 
@@ -1284,13 +1401,20 @@ plt.legend()
 
 plt.tight_layout()
 
+graph3_path = os.path.join(
+    OUTPUT_DIR,
+    "routing_distribution.png"
+)
+
 plt.savefig(
-    os.path.join(
-        OUTPUT_DIR,
-        "routing_distribution.png"
-    ),
+    graph3_path,
     dpi=300
 )
+
+print(f"      3/5 -> Saved: {graph3_path}")
+
+if SHOW_GRAPHS_INTERACTIVELY:
+    plt.show()
 
 plt.close()
 
@@ -1336,13 +1460,20 @@ plt.title(
 
 plt.tight_layout()
 
+graph4_path = os.path.join(
+    OUTPUT_DIR,
+    "confidence_vs_ers.png"
+)
+
 plt.savefig(
-    os.path.join(
-        OUTPUT_DIR,
-        "confidence_vs_ers.png"
-    ),
+    graph4_path,
     dpi=300
 )
+
+print(f"      4/5 -> Saved: {graph4_path}")
+
+if SHOW_GRAPHS_INTERACTIVELY:
+    plt.show()
 
 plt.close()
 
@@ -1406,15 +1537,24 @@ plt.xlim(0, 1)
 
 plt.tight_layout()
 
+graph5_path = os.path.join(
+    OUTPUT_DIR,
+    "coverage_vs_error.png"
+)
+
 plt.savefig(
-    os.path.join(
-        OUTPUT_DIR,
-        "coverage_vs_error.png"
-    ),
+    graph5_path,
     dpi=300
 )
 
+print(f"      5/5 -> Saved: {graph5_path}")
+
+if SHOW_GRAPHS_INTERACTIVELY:
+    plt.show()
+
 plt.close()
+
+print(f"  All 5 graphs and 4 CSVs ready in: {OUTPUT_DIR}")
 
 
 # ================================================================
@@ -1525,7 +1665,7 @@ report_lines.append(
 )
 
 report_lines.append(
-    "Three predictive models were evaluated:"
+    "Four predictive models were evaluated:"
 )
 
 report_lines.append(
@@ -1541,7 +1681,11 @@ report_lines.append(
 )
 
 report_lines.append(
-    "\nXGBoost was additionally calibrated using sigmoid "
+    "\n- LightGBM"
+)
+
+report_lines.append(
+    "\nBoth XGBoost and LightGBM were additionally calibrated using sigmoid "
     "probability calibration."
 )
 
@@ -1995,8 +2139,8 @@ doc.add_heading(
 )
 
 doc.add_paragraph(
-    "Logistic Regression, Random Forest and XGBoost were evaluated. "
-    "XGBoost was additionally calibrated using sigmoid calibration."
+    "Logistic Regression, Random Forest, XGBoost and LightGBM were evaluated. "
+    "Both XGBoost and LightGBM were additionally calibrated using sigmoid calibration."
 )
 
 doc.add_heading(
@@ -2312,6 +2456,18 @@ doc.save(
 
 
 # ================================================================
+# CREATE PDF REPORT
+# ================================================================
+
+try:
+    from generate_pdf import build_pdf
+    pdf_path = build_pdf(OUTPUT_DIR)
+except Exception as pdf_err:
+    pdf_path = None
+    print(f"\n[Notice] Could not generate PDF report automatically: {pdf_err}")
+
+
+# ================================================================
 # FINISHED
 # ================================================================
 
@@ -2376,7 +2532,9 @@ print(
     high_conf_low_ers_count
 )
 
-print("\nResearch report:")
-print(doc_path)
+print("\nResearch reports:")
+print(" - Word (.docx):", doc_path)
+if pdf_path and os.path.exists(pdf_path):
+    print(" - PDF (.pdf):  ", pdf_path)
 
 print("\nDONE.")

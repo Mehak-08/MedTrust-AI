@@ -37,7 +37,7 @@ The current experiment uses the MIMIC-IV DEMO dataset available locally. Therefo
 
 4. MACHINE LEARNING MODELS
 
-Three predictive models were evaluated:
+Four predictive models were evaluated:
 
 - Logistic Regression
 
@@ -45,7 +45,9 @@ Three predictive models were evaluated:
 
 - XGBoost
 
-XGBoost was additionally calibrated using sigmoid probability calibration.
+- LightGBM
+
+Both XGBoost and LightGBM were additionally calibrated using sigmoid probability calibration.
 
 ============================================================
 
@@ -100,6 +102,22 @@ XGBoost:
 
   Brier Score: 0.0763
 
+LightGBM:
+
+  Accuracy: 0.8500
+
+  Precision: 0.0000
+
+  Recall: 0.0000
+
+  F1: 0.0000
+
+  AUROC: 0.6667
+
+  AUPRC: 0.3269
+
+  Brier Score: 0.0880
+
 Calibrated XGBoost:
 
   Accuracy: 0.9000
@@ -115,6 +133,22 @@ Calibrated XGBoost:
   AUPRC: 0.6111
 
   Brier Score: 0.0854
+
+Calibrated LightGBM:
+
+  Accuracy: 0.9000
+
+  Precision: 0.0000
+
+  Recall: 0.0000
+
+  F1: 0.0000
+
+  AUROC: 0.5000
+
+  AUPRC: 0.5500
+
+  Brier Score: 0.0899
 
 ============================================================
 
