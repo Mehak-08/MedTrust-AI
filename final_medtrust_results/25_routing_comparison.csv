@@ -1,0 +1,4 @@
+Decision,Confidence_Only_Count,MedTrust_Count,Confidence_Only_Percentage,MedTrust_Percentage
+ACCEPT,20,4,86.95652173913044,17.391304347826086
+REVIEW,3,19,13.043478260869565,82.6086956521739
+DEFER,0,0,0.0,0.0

@@ -1,0 +1,17 @@
+Metric,Value
+Accuracy,0.9047619047619048
+Precision,0.0
+Recall,0.0
+F1 Score,0.0
+AUROC,0.4210526315789474
+Sensitivity,0.0
+Specificity,1.0
+Brier Score,0.0887042745016736
+Average Predictive Confidence,0.8814391427484781
+Average Explanation Reliability,0.9002185714285715
+Average Joint Reliability,0.8908288570885246
+ACCEPT Count,20.0
+REVIEW Count,1.0
+DEFER Count,0.0
+Acceptance Coverage,0.9523809523809524
+Accepted Error Rate,0.0999999999999999

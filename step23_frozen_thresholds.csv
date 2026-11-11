@@ -1,0 +1,4 @@
+Parameter,Value
+accept_threshold,0.85
+review_threshold,0.4
+target_accepted_error,0.1

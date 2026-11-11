@@ -1,0 +1,8 @@
+Parameter,Value
+accept_threshold,0.5
+review_threshold,0.5
+target_accepted_error,0.1
+validation_coverage,1.0
+validation_accepted_error,0.10526315789473684
+validation_review_rate,0.0
+validation_defer_rate,0.0

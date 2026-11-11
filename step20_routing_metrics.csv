@@ -1,0 +1,9 @@
+Metric,Value
+Total test cases,23.0
+MedTrust ACCEPT coverage,0.21739130434782608
+Confidence-only ACCEPT coverage,1.0
+MedTrust accepted error,0.2
+Confidence-only accepted error,0.08695652173913043
+Routing changes,18.0
+Routing changes percentage,78.26086956521739
+High-confidence low-ERS mismatch,20.0

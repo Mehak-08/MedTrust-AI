@@ -1,0 +1,93 @@
+============================================================
+MEDTRUST AI
+Reliability-Aware Clinical Decision Routing
+FINAL DEMO EXPERIMENT REPORT
+============================================================
+
+Generated: 2026-09-29 22:17:15
+
+1. PROJECT OVERVIEW
+------------------------------------------------------------
+MedTrust AI investigates whether predictive confidence alone is sufficient for deciding whether a clinical prediction should be accepted.
+
+The framework combines predictive confidence with an Explanation Reliability Score (ERS) to produce an ACCEPT, REVIEW, or DEFER routing decision.
+
+2. DATASET AND TASK
+------------------------------------------------------------
+Dataset: MIMIC-IV Clinical Database DEMO v2.2
+Task: ICU mortality prediction
+Outcome: Death during the same ICU stay
+Index time: ICU admission
+Feature window: First 6 hours after ICU admission
+Split: Patient-level train / validation / test split
+Test cases: 23
+
+3. MODEL PIPELINE
+------------------------------------------------------------
+Primary prediction model: XGBoost
+Baseline models: Logistic Regression and Random Forest
+Calibration: Sigmoid / Platt-style calibration
+Explanation method: SHAP
+Reliability signals: stability, faithfulness, ranking consistency, and sign consistency
+
+4. ROUTING RESULTS
+------------------------------------------------------------
+
+CONFIDENCE-ONLY ROUTING
+ACCEPT : 20
+REVIEW : 3
+DEFER  : 0
+ACCEPT coverage : 0.8696
+Accepted error : 0.0500
+
+MEDTRUST ROUTING
+ACCEPT : 4
+REVIEW : 19
+DEFER  : 0
+ACCEPT coverage : 0.1739
+Accepted error : 0.0000
+
+5. ROUTING CHANGES
+------------------------------------------------------------
+Changed decisions: 16
+Percentage changed: 69.57%
+High-confidence / low-ERS cases: 0
+
+6. RELIABILITY SIGNALS
+------------------------------------------------------------
+Average predictive confidence: 0.9308
+Average ERS: 0.7136
+Average joint reliability: 0.8222
+
+7. INTERPRETATION
+------------------------------------------------------------
+The demo experiment demonstrates the routing mechanism by combining predictive confidence and explanation reliability.
+
+The comparison shows how adding ERS can change routing decisions for cases where predictive confidence is high but explanation reliability is comparatively low.
+
+These results are intended as a methodological demonstration on the MIMIC-IV DEMO dataset, not as clinical performance evidence.
+
+8. IMPORTANT LIMITATIONS
+------------------------------------------------------------
+1. The MIMIC-IV DEMO dataset is very small.
+2. The number of ICU mortality events is very small.
+3. ERS components are prototype reliability measures and require stronger validation.
+4. Calibration estimates are unstable on a tiny dataset.
+5. The current experiment does not establish clinical utility or safety.
+6. Final research experiments should use the full MIMIC-IV dataset.
+7. External validation using eICU-CRD remains required.
+8. Temporal and out-of-distribution evaluation remains required.
+
+9. NEXT RESEARCH PHASE
+------------------------------------------------------------
+The next phase should rebuild the feature table from raw MIMIC-IV data without global pre-split imputation.
+
+Imputation must be fitted only on the training data and then applied to validation and test data.
+
+The full MIMIC-IV cohort should then be used to perform the final prediction, calibration, explanation reliability, threshold selection, and routing experiments.
+
+Afterward, the frozen pipeline should be evaluated on eICU-CRD for external validation.
+
+============================================================
+END OF DEMO REPORT
+============================================================

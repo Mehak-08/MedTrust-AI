@@ -1,0 +1,227 @@
+
+MEDTRUST AI
+Reliability-Aware Clinical Decision Routing
+============================================
+
+PROJECT OVERVIEW
+----------------
+
+MedTrust AI is a research framework designed to investigate
+whether predictive confidence alone is sufficient to determine
+whether a clinical AI prediction should be accepted.
+
+The framework combines:
+
+1. Predictive confidence
+2. Explanation reliability
+
+The combined signals are used to route predictions into:
+
+ACCEPT
+REVIEW
+DEFER
+
+
+DATASET AND TASK
+----------------
+
+Dataset:
+MIMIC-IV Clinical Database Demo v2.2
+
+Task:
+ICU mortality prediction
+
+Feature window:
+First 6 hours after ICU admission
+
+Prediction target:
+Death during the same ICU stay
+
+
+MODEL PIPELINE
+--------------
+
+Baseline models:
+
+- Logistic Regression
+- Random Forest
+
+Primary model:
+
+- XGBoost
+
+Explanation method:
+
+- SHAP TreeExplainer
+
+Explanation reliability prototype:
+
+- SHAP stability under small controlled perturbations
+
+
+FINAL DEMO RESULTS
+------------------
+
+Number of test patients:
+21
+
+Accuracy:
+0.9048
+
+Precision:
+0.0000
+
+Recall:
+0.0000
+
+F1:
+0.0000
+
+AUROC:
+0.4211
+
+Sensitivity:
+0.0000
+
+Specificity:
+1.0000
+
+Brier Score:
+0.0887
+
+
+RELIABILITY RESULTS
+-------------------
+
+Average predictive confidence:
+0.8814
+
+Average explanation reliability:
+0.9002
+
+Average joint reliability:
+0.8908
+
+
+ROUTING RESULTS
+---------------
+
+ACCEPT:
+20.0
+
+REVIEW:
+1.0
+
+DEFER:
+0.0
+
+Acceptance coverage:
+0.9524
+
+Accepted error rate:
+0.1000
+
+
+INTERPRETATION
+--------------
+
+The prototype demonstrates how predictive confidence and
+explanation stability can be combined into a reliability-aware
+routing mechanism.
+
+The current demonstration produced mostly ACCEPT decisions,
+with a smaller number of REVIEW decisions.
+
+No DEFER decisions were produced under the current prototype
+thresholds.
+
+
+IMPORTANT LIMITATIONS
+---------------------
+
+1. The demonstration uses the MIMIC-IV clinical database demo,
+   which is very small compared with the full MIMIC-IV dataset.
+
+2. Only a small number of ICU deaths are present in the demo.
+
+3. Therefore the reported performance values are pipeline
+   validation results and should NOT be interpreted as
+   clinical performance claims.
+
+4. The current explanation reliability score is a prototype
+   based on SHAP stability.
+
+5. A complete ERS should additionally investigate
+   faithfulness, ranking consistency, and sign consistency.
+
+6. The current ACCEPT/REVIEW/DEFER thresholds are prototype
+   thresholds.
+
+7. Final research thresholds should be selected using
+   validation data and frozen before test evaluation.
+
+8. Final research should use patient-level splitting,
+   leakage-safe preprocessing, temporal validation, and
+   external validation on eICU-CRD.
+
+
+RESEARCH CONTRIBUTION
+---------------------
+
+The central research contribution being investigated is the
+use of explanation reliability as an additional signal beyond
+predictive confidence for clinical decision routing.
+
+The intended routing policy is:
+
+High confidence + reliable explanation
+        -> ACCEPT
+
+Uncertain or conflicting reliability signals
+        -> REVIEW
+
+Low overall reliability
+        -> DEFER
+
+
+FUTURE WORK
+-----------
+
+1. Run the pipeline on full MIMIC-IV.
+
+2. Freeze the exact cohort and outcome definition.
+
+3. Use patient-level and temporal splits.
+
+4. Fit preprocessing only on training data.
+
+5. Improve the Explanation Reliability Score.
+
+6. Add explanation faithfulness.
+
+7. Add feature ranking consistency.
+
+8. Add sign consistency.
+
+9. Select routing thresholds using validation data.
+
+10. Evaluate selective risk.
+
+11. Test temporal robustness.
+
+12. Perform external validation on eICU-CRD.
+
+13. Compare confidence-only routing against
+    confidence + explanation reliability routing.
+
+
+CONCLUSION
+----------
+
+The current prototype successfully implements the main
+MedTrust AI pipeline from prediction to explanation and
+reliability-aware routing.
+
+The demo establishes the technical workflow but does not
+establish clinical effectiveness. Larger-scale validation is
+required before making clinical or general performance claims.

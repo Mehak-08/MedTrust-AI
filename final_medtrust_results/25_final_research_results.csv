@@ -1,0 +1,16 @@
+Metric,Value
+Test cases,23.0
+Confidence-only ACCEPT coverage,0.8695652173913043
+MedTrust ACCEPT coverage,0.17391304347826086
+Confidence-only accepted error,0.05
+MedTrust accepted error,0.0
+Confidence-only REVIEW rate,0.13043478260869565
+MedTrust REVIEW rate,0.8260869565217391
+Confidence-only DEFER rate,0.0
+MedTrust DEFER rate,0.0
+Routing changes,16.0
+Routing change percentage,69.56521739130434
+High-confidence / low-ERS cases,0.0
+Average predictive confidence,0.9308250169565216
+Average ERS,0.7135949050121116
+Average joint reliability,0.8222099603925277

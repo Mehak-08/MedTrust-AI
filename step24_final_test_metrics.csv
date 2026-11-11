@@ -1,0 +1,13 @@
+Metric,Value
+Test cases,23.0
+Frozen ACCEPT threshold,0.85
+Frozen REVIEW threshold,0.4
+MedTrust ACCEPT coverage,0.17391304347826086
+Confidence-only ACCEPT coverage,0.8695652173913043
+MedTrust accepted error,0.0
+Confidence-only accepted error,0.05
+Routing changes,16.0
+High-confidence low-ERS cases,0.0
+Average predictive confidence,0.9308250169565216
+Average ERS,0.7135949050121116
+Average joint reliability,0.8222099603925277

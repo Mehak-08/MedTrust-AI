@@ -1,0 +1,11 @@
+metric,value
+total_patients,21.0
+accepted,20.0
+reviewed,1.0
+deferred,0.0
+acceptance_coverage,0.9523809523809523
+accepted_error_rate,0.09999999999999998
+average_confidence,0.8814391427484781
+average_ERS,0.9002185714285715
+average_joint_reliability,0.8908288570885246
+high_confidence_low_ERS_mismatch,0.0

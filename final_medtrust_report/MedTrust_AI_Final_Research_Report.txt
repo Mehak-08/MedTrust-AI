@@ -1,0 +1,273 @@
+MEDTRUST AI
+RELIABILITY-AWARE CLINICAL DECISION ROUTING
+
+============================================================
+
+1. RESEARCH OVERVIEW
+
+MedTrust AI investigates whether clinical AI reliability should be assessed using predictive confidence alone or by combining predictive confidence with explanation reliability.
+
+The proposed framework combines a calibrated prediction confidence score with an Explanation Reliability Score (ERS) and uses the combined signal to route predictions to ACCEPT, REVIEW, or DEFER.
+
+============================================================
+
+2. RESEARCH PROBLEM
+
+A model can produce a high-confidence prediction while its explanation may be unstable or unreliable. Therefore, confidence alone may not completely describe whether a prediction should be routinely accepted.
+
+MedTrust AI studies explanation reliability as a second reliability signal.
+
+============================================================
+
+3. DATASET
+
+Dataset: MIMIC-IV Clinical Database Demo v2.2
+
+Total records/stays used: 126
+
+Predictor variables: 85
+
+Positive ICU mortality outcomes: 9
+
+Negative ICU mortality outcomes: 117
+
+The current experiment uses the MIMIC-IV DEMO dataset available locally. Therefore, these results should be treated as methodological validation rather than clinical evidence.
+
+============================================================
+
+4. MACHINE LEARNING MODELS
+
+Three predictive models were evaluated:
+
+- Logistic Regression
+
+- Random Forest
+
+- XGBoost
+
+XGBoost was additionally calibrated using sigmoid probability calibration.
+
+============================================================
+
+5. MODEL PERFORMANCE
+
+
+Logistic Regression:
+
+  Accuracy: 0.8500
+
+  Precision: 0.0000
+
+  Recall: 0.0000
+
+  F1: 0.0000
+
+  AUROC: 0.6667
+
+  AUPRC: 0.3269
+
+  Brier Score: 0.1106
+
+Random Forest:
+
+  Accuracy: 0.8500
+
+  Precision: 0.0000
+
+  Recall: 0.0000
+
+  F1: 0.0000
+
+  AUROC: 0.5000
+
+  AUPRC: 0.3026
+
+  Brier Score: 0.1067
+
+XGBoost:
+
+  Accuracy: 0.9000
+
+  Precision: 0.0000
+
+  Recall: 0.0000
+
+  F1: 0.0000
+
+  AUROC: 0.6944
+
+  AUPRC: 0.5769
+
+  Brier Score: 0.0763
+
+Calibrated XGBoost:
+
+  Accuracy: 0.9000
+
+  Precision: 0.0000
+
+  Recall: 0.0000
+
+  F1: 0.0000
+
+  AUROC: 0.8056
+
+  AUPRC: 0.6111
+
+  Brier Score: 0.0854
+
+============================================================
+
+6. EXPLAINABILITY
+
+
+SHAP TreeExplainer was used to investigate the contribution of individual features to the XGBoost predictions.
+
+Top features by mean absolute SHAP value:
+
+- spo2_min: 0.5496
+
+- anchor_age: 0.4109
+
+- glucose_min: 0.4010
+
+- phosphate_mean: 0.3751
+
+- ph_max: 0.3391
+
+- ph_min: 0.3301
+
+- resp_rate_min: 0.3238
+
+- glucose_mean: 0.2318
+
+- mbp_min: 0.1712
+
+- sbp_max: 0.1519
+
+============================================================
+
+7. EXPLANATION RELIABILITY SCORE
+
+
+Average ERS: 0.7537
+
+Minimum ERS: 0.6130
+
+Maximum ERS: 0.9809
+
+The prototype ERS combines explanation stability, feature-ranking consistency, sign consistency and faithfulness under controlled perturbations.
+
+============================================================
+
+8. MEDTRUST ROUTING
+
+
+Prototype ACCEPT threshold: 0.70
+
+Prototype REVIEW threshold: 0.50
+
+MedTrust AI combines:
+
+  50% predictive confidence
+
+  50% explanation reliability
+
+Routing categories:
+
+  ACCEPT = prediction has sufficient joint reliability
+
+  REVIEW = prediction requires human review
+
+  DEFER = prediction has insufficient reliability
+
+============================================================
+
+9. ROUTING RESULTS
+
+
+Confidence-only strategy:
+
+  ACCEPT: 20
+
+  REVIEW: 0
+
+  DEFER: 0
+
+  Coverage: 1.0000
+
+  Accepted error: 0.1000
+
+
+MedTrust AI strategy:
+
+  ACCEPT: 20
+
+  REVIEW: 0
+
+  DEFER: 0
+
+  Coverage: 1.0000
+
+  Accepted error: 0.1000
+
+
+Routing changed for 0 test cases.
+
+High-confidence / low-ERS cases: 0
+
+============================================================
+
+10. RESEARCH INTERPRETATION
+
+
+The experiment demonstrates a prototype reliability-aware routing mechanism in which predictive confidence is not treated as the only reliability signal.
+
+The additional explanation-reliability signal can identify cases where predictive confidence and explanation reliability do not agree.
+
+Such cases can be routed for additional human review instead of being automatically accepted.
+
+============================================================
+
+11. LIMITATIONS
+
+
+- The current experiment uses the MIMIC-IV DEMO dataset.
+
+- The number of mortality-positive cases is very small.
+
+- Therefore performance metrics can be unstable.
+
+- ERS components are a research prototype and require further validation.
+
+- Routing thresholds and the 50/50 joint-reliability weight are prototype choices for this demonstration.
+
+- The results should not be interpreted as evidence for clinical deployment.
+
+============================================================
+
+12. FUTURE WORK
+
+
+- Validate on the full MIMIC-IV dataset.
+
+- Perform temporal validation.
+
+- Perform external validation using eICU-CRD.
+
+- Improve and formally validate the ERS definition.
+
+- Select routing thresholds using validation data.
+
+- Evaluate statistical uncertainty using confidence intervals.
+
+- Investigate out-of-distribution and domain-shift cases.
+
+============================================================
+
+13. CONCLUSION
+
+
+MedTrust AI presents a reliability-aware clinical decision routing framework that combines calibrated predictive confidence with explanation reliability. The prototype demonstrates how predictions can be categorized into ACCEPT, REVIEW and DEFER rather than relying exclusively on model confidence.
+
+The current results are intended as a methodological demonstration on the available MIMIC-IV demo dataset. Full-dataset and external validation are required before drawing clinical conclusions.

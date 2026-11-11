@@ -1,0 +1,4 @@
+Route,Confidence_Only_Count,MedTrust_Count,Confidence_Only_Percentage,MedTrust_Percentage
+ACCEPT,18,20,85.71428571428571,95.23809523809523
+REVIEW,3,1,14.285714285714285,4.761904761904762
+DEFER,0,0,0.0,0.0

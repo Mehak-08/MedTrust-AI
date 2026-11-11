@@ -1,0 +1,4 @@
+Decision,Confidence_Only_Count,MedTrust_Count
+ACCEPT,20,4
+REVIEW,3,19
+DEFER,0,0

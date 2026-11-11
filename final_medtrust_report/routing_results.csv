@@ -1,0 +1,3 @@
+Strategy,ACCEPT,REVIEW,DEFER,Coverage,Accepted_Error
+MedTrust_Route,20,0,0,1.0,0.1
+Confidence_Only_Route,20,0,0,1.0,0.1

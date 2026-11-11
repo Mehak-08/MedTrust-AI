@@ -1,0 +1,7 @@
+Model,Split,Accuracy,Precision,Recall,F1,AUROC,AUPRC
+Logistic Regression,Validation,1.0,0.0,0.0,0.0,,0.0
+Logistic Regression,Test,0.85,0.0,0.0,0.0,0.6666666666666666,0.3269230769230769
+Random Forest,Validation,1.0,0.0,0.0,0.0,,0.0
+Random Forest,Test,0.85,0.0,0.0,0.0,0.5,0.3026315789473684
+XGBoost,Validation,1.0,0.0,0.0,0.0,,0.0
+XGBoost,Test,0.9,0.0,0.0,0.0,0.6944444444444444,0.5769230769230769
